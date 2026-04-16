@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DayTrack — Your personal daily schedule, task tracker, journal & spending log.">
+  <title>DayTrack — Daily Schedule Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+  <!-- Toast Notifications -->
+  <div id="toast-container"></div>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">⚡</span>
+          <h1>DayTrack</h1>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-view="today" id="nav-today">
+          <span class="nav-icon">📅</span>
+          <span class="nav-label">Today</span>
+        </button>
+        <button class="nav-item" data-view="history" id="nav-history">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">History</span>
+        </button>
+        <button class="nav-item" data-view="settings" id="nav-settings">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Summary -->
+      <div class="sidebar-summary">
+        <h3>Today's Overview</h3>
+        <div class="progress-ring-container">
+          <svg class="progress-ring" width="110" height="110">
+            <circle class="progress-ring-bg" cx="55" cy="55" r="48" />
+            <circle class="progress-ring-fill" id="progress-ring-fill" cx="55" cy="55" r="48" />
+          </svg>
+          <div class="progress-ring-text" id="progress-ring-text">0%</div>
+        </div>
+        <p class="progress-label">Overall completion</p>
+
+        <div class="sidebar-mini-stats">
+          <div class="mini-stat">
+            <span class="mini-stat-icon">📋</span>
+            <span class="mini-stat-val" id="sidebar-routine-stat">0/0</span>
+            <span class="mini-stat-label">Routine</span>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-stat-icon">🎯</span>
+            <span class="mini-stat-val" id="sidebar-tasks-stat">0/0</span>
+            <span class="mini-stat-label">Tasks</span>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-stat-icon">💰</span>
+            <span class="mini-stat-val" id="sidebar-spend-stat">₹0</span>
+            <span class="mini-stat-label">Spent</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Water Tracker -->
+      <div class="sidebar-water">
+        <h3>💧 Water Intake</h3>
+        <div class="water-glasses" id="water-glasses"></div>
+        <p class="water-label"><span id="water-count">0</span> / 8 glasses</p>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu">☰</button>
+          <div class="date-display">
+            <h2 id="current-date"></h2>
+            <p id="current-day"></p>
+          </div>
+        </div>
+        <div class="top-bar-right">
+          <div class="streak-badge" id="streak-badge">
+            <span class="streak-icon">🔥</span>
+            <span class="streak-count" id="streak-count">0</span>
+            <span class="streak-label">day streak</span>
+          </div>
+          <div class="greeting" id="greeting"></div>
+        </div>
+      </header>
+
+      <!-- ==================== TODAY VIEW ==================== -->
+      <section class="view active" id="view-today">
+
+        <!-- Motivation Banner -->
+        <div class="motivation-banner" id="motivation-banner">
+          <div class="motivation-text">
+            <p class="motivation-quote" id="motivation-quote"></p>
+          </div>
+          <div class="motivation-glow"></div>
+        </div>
+
+        <!-- Section Tabs -->
+        <div class="section-tabs" id="section-tabs">
+          <button class="section-tab active" data-section="routine">
+            <span class="tab-icon">📋</span> My Schedule
+          </button>
+          <button class="section-tab" data-section="tasks">
+            <span class="tab-icon">🎯</span> Daily Tasks
+          </button>
+          <button class="section-tab" data-section="journal">
+            <span class="tab-icon">📝</span> Journal
+          </button>
+          <button class="section-tab" data-section="spendings">
+            <span class="tab-icon">💰</span> Spendings
+          </button>
+          <button class="section-tab" data-section="career">
+            <span class="tab-icon">🚀</span> Job Prep
+          </button>
+        </div>
+
+        <!-- ===== SECTION 1: Fixed Daily Schedule (Routine) ===== -->
+        <div class="today-section active" id="section-routine">
+          <div class="section-card">
+            <div class="section-card-header">
+              <div>
+                <h3>📋 My Daily Schedule</h3>
+                <p class="section-subtitle">Fixed routine — these repeat every day. Set them up in Settings.</p>
+              </div>
+              <div class="routine-progress">
+                <span id="routine-done">0</span> / <span id="routine-total">0</span> done
+              </div>
+            </div>
+
+            <div class="routine-list" id="routine-list">
+              <!-- Rendered by JS -->
+            </div>
+
+            <div class="empty-state" id="routine-empty">
+              <div class="empty-icon">📋</div>
+              <h3>No routine set up yet</h3>
+              <p>Go to <strong>Settings</strong> to add your fixed daily schedule items.</p>
+              <button class="btn btn-primary" id="btn-goto-settings">⚙️ Go to Settings</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== SECTION 2: Daily Tasks (Variable, up to 10) ===== -->
+        <div class="today-section" id="section-tasks">
+          <div class="section-card">
+            <div class="section-card-header">
+              <div>
+                <h3>🎯 Daily Tasks</h3>
+                <p class="section-subtitle">Up to 10 tasks you set each day. Track how many you complete!</p>
+              </div>
+              <div class="section-actions">
+                <span class="task-counter" id="task-counter">0 / 10</span>
+                <button class="btn btn-primary btn-sm" id="btn-add-task">+ Add Task</button>
+              </div>
+            </div>
+
+            <div class="task-list" id="task-list">
+              <!-- Rendered by JS -->
+            </div>
+
+            <div class="empty-state" id="tasks-empty">
+              <div class="empty-icon">🎯</div>
+              <h3>No tasks for today</h3>
+              <p>Add up to 10 tasks to track throughout the day.</p>
+              <button class="btn btn-primary" id="btn-add-first-task">+ Add Your First Task</button>
+            </div>
+
+            <div class="tasks-summary" id="tasks-summary">
+              <div class="summary-bar">
+                <div class="summary-bar-fill" id="tasks-bar-fill"></div>
+              </div>
+              <p class="summary-text"><span id="tasks-done">0</span> of <span id="tasks-total">0</span> tasks completed</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== SECTION 3: Journal ===== -->
+        <div class="today-section" id="section-journal">
+          <div class="section-card">
+            <div class="section-card-header">
+              <div>
+                <h3>📝 Daily Journal</h3>
+                <p class="section-subtitle">Write about your day, thoughts, gratitude, or reflections.</p>
+              </div>
+              <div class="journal-meta" id="journal-meta">
+                <span class="journal-saved-indicator" id="journal-saved">✓ Saved</span>
+              </div>
+            </div>
+
+            <div class="journal-container">
+              <div class="journal-prompts">
+                <button class="journal-prompt-btn" data-prompt="What am I grateful for today?">🙏 Gratitude</button>
+                <button class="journal-prompt-btn" data-prompt="What did I learn today?">💡 Learnings</button>
+                <button class="journal-prompt-btn" data-prompt="How am I feeling right now?">💭 Feelings</button>
+                <button class="journal-prompt-btn" data-prompt="What are my goals for tomorrow?">🎯 Tomorrow</button>
+              </div>
+              <textarea
+                id="journal-textarea"
+                class="journal-textarea"
+                placeholder="Start writing your thoughts for today..."
+                rows="12"
+              ></textarea>
+              <div class="journal-footer">
+                <span class="journal-char-count" id="journal-char-count">0 characters</span>
+                <span class="journal-time" id="journal-time"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== SECTION 4: Finance Manager ===== -->
+        <div class="today-section" id="section-spendings">
+          <div class="section-card">
+            <div class="section-card-header">
+              <div>
+                <h3>💰 Finance Manager</h3>
+                <p class="section-subtitle">Track incoming, outgoing, budgets, and plan trips.</p>
+              </div>
+              <div class="section-actions">
+                <button class="btn btn-primary btn-sm" id="btn-add-expense">+ Add Transaction</button>
+              </div>
+            </div>
+
+            <div class="finance-tabs">
+              <button class="btn btn-sm finance-tab active" data-tab="log">Daily Spends</button>
+              <button class="btn btn-sm finance-tab" data-tab="budget">Monthly Budget</button>
+              <button class="btn btn-sm finance-tab" data-tab="goals">Trips & Goals</button>
+              <button class="btn btn-sm finance-tab" data-tab="subs">Subscriptions</button>
+              <button class="btn btn-sm finance-tab" data-tab="investments">Investments</button>
+            </div>
+
+            <div class="finance-view active" id="finance-view-log">
+              <!-- Add Expense Inline Form -->
+              <div class="expense-form hidden" id="expense-form">
+                <div class="expense-form-row">
+                  <input type="text" id="expense-desc" placeholder="What was it for?" class="expense-input" autocomplete="off">
+                  <input type="number" id="expense-amount" placeholder="₹ Amount" class="expense-input expense-amount-input" min="0" step="0.01">
+                  <select id="expense-category" class="expense-input expense-cat-input">
+                    <!-- Populated by JS -->
+                  </select>
+                  <button class="btn btn-primary btn-sm" id="btn-save-expense">Add</button>
+                  <button class="btn btn-secondary btn-sm" id="btn-cancel-expense">✕</button>
+                </div>
+              </div>
+
+              <div class="total-spent" style="margin-bottom:10px;">
+                Today's Spent: <strong id="total-spent">₹0</strong>
+              </div>
+
+              <div class="expense-list" id="expense-list"></div>
+              
+              <!-- CSV Auto Categorization Demo -->
+              <div style="margin-top:20px; padding:15px; border:1px dashed var(--border-color); border-radius:8px; text-align:center;">
+                  <h4>🧾 Bank CSV Auto-Categorization</h4>
+                  <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px;">Drop your ICICI or HDFC .csv statement here to auto-categorize expenses</p>
+                  <input type="file" id="bank-csv-upload" accept=".csv" style="display:none;">
+                  <button class="btn btn-secondary btn-sm" onclick="document.getElementById('bank-csv-upload').click()">Browse CSV File</button>
+                  <div id="csv-preview-container" class="hidden" style="margin-top:10px; text-align:left;"></div>
+              </div>
+
+              <div class="empty-state" id="spendings-empty">
+                <div class="empty-icon">💸</div>
+                <h3>No expenses logged today</h3>
+                <button class="btn btn-primary" id="btn-add-first-expense">+ Log First Expense</button>
+              </div>
+            </div>
+
+            <div class="finance-view hidden" id="finance-view-budget">
+               <div class="finance-summary-cards">
+                  <div class="stat-card">
+                     <div class="stat-lbl">Income (Fixed)</div>
+                     <strong class="stat-val text-success" id="stat-income">₹50,000</strong>
+                  </div>
+                  <div class="stat-card">
+                     <div class="stat-lbl">Total Spent (Month)</div>
+                     <strong class="stat-val text-danger" id="stat-spent-month">₹0</strong>
+                  </div>
+                  <div class="stat-card">
+                     <div class="stat-lbl">Remaining</div>
+                     <strong class="stat-val" id="stat-remaining">₹0</strong>
+                  </div>
+               </div>
+               
+               <div class="budget-section-header">
+                  <h4>📊 Predictive Burn Rate</h4>
+               </div>
+               <div style="background:var(--bg-secondary); padding:10px; border-radius:10px; margin-bottom:20px; border:1px solid var(--border-color);">
+                  <canvas id="burn-rate-chart" height="150"></canvas>
+               </div>
+               
+               <div class="budget-section-header">
+                  <h4>Category Budgets</h4>
+               </div>
+               <div id="monthly-budget-list"></div>
+
+               <div class="ai-suggestion-box">
+                 <strong>💡 Finance Advisor:</strong> <span id="budget-suggestion-text"></span>
+               </div>
+            </div>
+
+            <div class="finance-view hidden" id="finance-view-goals">
+               <div style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+                  <button class="btn btn-sm btn-primary" id="btn-add-goal" style="width: auto;">+ Plan Upcoming Trip or Goal</button>
+                  <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; cursor:pointer;" title="In Travel Mode, new expenses go entirely into the Trip Vault instead of your monthly budget!">
+                     <input type="checkbox" id="travel-mode-toggle"> ✈️ Travel Mode
+                  </label>
+               </div>
+               <div id="add-goal-form" class="expense-form hidden" style="margin-bottom:20px; flex-direction:column; gap:10px; display:flex;">
+                  <input type="text" id="goal-name" placeholder="e.g. Goa Trip" class="expense-input">
+                  <input type="number" id="goal-target" placeholder="Target ₹ Amount (e.g. 20000)" class="expense-input">
+                  <input type="month" id="goal-date" class="expense-input">
+                  <div style="display:flex;gap:10px;">
+                    <button class="btn btn-primary btn-sm" id="btn-save-goal" style="flex:1">Save Plan</button>
+                    <button class="btn btn-secondary btn-sm" id="btn-cancel-goal" style="flex:1">Cancel</button>
+                  </div>
+               </div>
+               <div id="goals-list"></div>
+            </div>
+
+            <div class="finance-view hidden" id="finance-view-subs">
+               <div style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+                  <h4 style="margin:0;">Recurring Expenses</h4>
+                  <button class="btn btn-sm btn-primary" id="btn-add-sub" style="width: auto;">+ Add Sub</button>
+               </div>
+               <div id="subs-list"></div>
+               <div class="ai-suggestion-box" id="subs-ai-warning" style="display:none; border-left-color: var(--danger);">
+                 <strong>⚠️ Warning:</strong> Ghost subscriptions are eating >5% of your income!
+               </div>
+            </div>
+
+            <div class="finance-view hidden" id="finance-view-investments">
+               <div class="finance-summary-cards">
+                  <div class="stat-card">
+                     <div class="stat-lbl">Monthly Invested</div>
+                     <strong class="stat-val text-success" id="stat-monthly-invested">₹14,500</strong>
+                  </div>
+                  <div class="stat-card">
+                     <div class="stat-lbl">10-Year Projection</div>
+                     <strong class="stat-val" id="stat-10y-proj">₹33.5L</strong>
+                  </div>
+               </div>
+               <div class="budget-section-header">
+                  <h4>📈 Compound Growth (12% YoY)</h4>
+               </div>
+               <div style="background:var(--bg-secondary); padding:10px; border-radius:10px; margin-bottom:20px; border:1px solid var(--border-color);">
+                  <canvas id="compound-chart" height="150"></canvas>
+               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== SECTION 5: Job Prep ===== -->
+        <div class="today-section" id="section-career">
+          <div class="section-card">
+            <div class="section-card-header">
+              <div>
+                <h3>🚀 Job Change Mastery</h3>
+                <p class="section-subtitle">Your structured plan and daily practice to land that next role.</p>
+              </div>
+              <div class="routine-progress">
+                <span id="career-done">0</span> / <span id="career-total">0</span> done
+              </div>
+            </div>
+
+            <div class="finance-tabs" id="job-tabs">
+              <button class="btn btn-sm finance-tab active" data-job-tab="checklist">Career Checklist</button>
+              <button class="btn btn-sm finance-tab" data-job-tab="technical">Technical Prep</button>
+              <button class="btn btn-sm finance-tab" data-job-tab="interview">Mock Interview</button>
+              <button class="btn btn-sm finance-tab" data-job-tab="english">English Fluency</button>
+            </div>
+
+            <!-- Tab: Checklist -->
+            <div class="job-view active" id="job-view-checklist">
+              <div class="career-checklist-container" style="margin-top:0;">
+                <div class="career-checklist" id="career-checklist">
+                  <!-- Rendered by JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Technical -->
+            <div class="job-view hidden" id="job-view-technical">
+              <div class="practice-widget" style="margin-top:0;">
+                <div class="practice-card" id="practice-card">
+                  <div class="practice-topic" id="practice-topic">Topic</div>
+                  <div class="practice-question" id="practice-question">Question goes here</div>
+                  <div class="practice-answer hidden" id="practice-answer">Answer goes here</div>
+                  <div class="practice-actions">
+                    <button class="btn btn-secondary btn-sm" id="btn-show-answer">Show Answer</button>
+                    <button class="btn btn-primary btn-sm" id="btn-next-question">Next Question</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Mock Interview -->
+            <div class="job-view hidden" id="job-view-interview">
+              <div class="practice-card">
+                 <div class="practice-topic" id="interview-type">Behavioral</div>
+                 <div class="practice-question" id="interview-question">Question Here?</div>
+                 <div style="margin:20px 0;">
+                    <div id="interview-timer" style="font-size:2.5rem; font-weight:700; color:var(--warning); font-family:monospace; margin-bottom:5px;">00:00</div>
+                    <p style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">Speak aloud and practice your delivery</p>
+                 </div>
+                 <div class="practice-answer hidden" id="interview-tips" style="text-align:left;">
+                    <strong>Key Points Expected:</strong><br>
+                    <ul id="interview-tips-list" style="margin-left:20px; font-size:0.85rem; margin-top:8px;"></ul>
+                 </div>
+                 <div class="practice-actions">
+                    <button class="btn btn-primary btn-sm" id="btn-start-interview">Start Timer</button>
+                    <button class="btn btn-secondary btn-sm" id="btn-show-tips">Expected Answer</button>
+                    <button class="btn btn-secondary btn-sm" id="btn-next-interview">Next Scenario</button>
+                 </div>
+              </div>
+            </div>
+
+            <!-- Tab: English -->
+            <div class="job-view hidden" id="job-view-english">
+               <div class="practice-card">
+                  <div class="practice-topic">Word / Idiom of the Day</div>
+                  <div class="practice-question" id="english-word" style="color:var(--accent-primary); font-size:1.4rem;">Word</div>
+                  <div id="english-meaning" style="font-size:0.95rem; margin-bottom:10px;">Meaning goes here</div>
+                  <div id="english-example" style="font-style:italic; font-size:0.9rem; color:var(--text-muted); margin-bottom:20px;">"Example sentence goes here"</div>
+                  
+                  <div style="margin-top:20px; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); text-align:left;">
+                    <h4>Reading Fluency Practice</h4>
+                  </div>
+                  <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px; text-align:left;">Read the following paragraph aloud clearly and confidently:</p>
+                  <div id="english-paragraph" style="background:var(--bg-input); padding:15px; border-radius:8px; font-size:0.95rem; line-height:1.6; text-align:left; border-left:4px solid var(--accent-secondary);">
+                    Paragraph goes here...
+                  </div>
+                  <div class="practice-actions" style="margin-top:20px;">
+                    <button class="btn btn-primary btn-sm" id="btn-next-english">Next English Exercise</button>
+                  </div>
+               </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== HISTORY VIEW ==================== -->
+      <section class="view" id="view-history">
+        <div class="history-header">
+          <h3>📊 Activity History</h3>
+          <div class="history-controls">
+            <button class="btn btn-secondary btn-sm" id="btn-prev-week">← Previous</button>
+            <span id="history-range" class="history-range"></span>
+            <button class="btn btn-secondary btn-sm" id="btn-next-week">Next →</button>
+          </div>
+        </div>
+        <div class="history-grid" id="history-grid"></div>
+        <div class="history-empty hidden" id="history-empty">
+          <div class="empty-icon">📅</div>
+          <h3>No history yet</h3>
+          <p>Complete some daily activities to start building your history.</p>
+        </div>
+      </section>
+
+      <!-- ==================== SETTINGS VIEW ==================== -->
+      <section class="view" id="view-settings">
+        <div class="settings-container">
+          <h3>⚙️ Settings</h3>
+
+          <!-- Fixed Routine Manager -->
+          <div class="settings-group">
+            <h4>📋 My Daily Schedule (Fixed Routine)</h4>
+            <p class="settings-group-desc">Add tasks that repeat every single day. These will appear in the "My Schedule" section.</p>
+
+            <div class="routine-manager">
+              <div class="routine-add-row">
+                <input type="text" id="routine-input" placeholder="e.g., Wake up at 6 AM, Meditate, Exercise..." maxlength="100" autocomplete="off" class="routine-add-input">
+                <input type="time" id="routine-time-input" class="routine-time-input">
+                <button class="btn btn-primary btn-sm" id="btn-add-routine">+ Add</button>
+              </div>
+              <div class="routine-manager-list" id="routine-manager-list">
+                <!-- Rendered by JS -->
+              </div>
+              <p class="routine-hint" id="routine-hint">Drag items to reorder. These tasks appear every day.</p>
+            </div>
+          </div>
+
+          <!-- Reminders -->
+          <div class="settings-group">
+            <h4>⏰ Reminders</h4>
+            <div class="setting-item">
+              <div class="setting-info">
+                <label for="water-reminder-toggle">Water Drinking Reminders</label>
+                <p class="setting-desc">Get reminded to drink water periodically</p>
+              </div>
+              <label class="toggle" for="water-reminder-toggle">
+                <input type="checkbox" id="water-reminder-toggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <label for="water-interval">Water Reminder Interval</label>
+                <p class="setting-desc">How often to remind you (in minutes)</p>
+              </div>
+              <select id="water-interval">
+                <option value="15">15 min</option>
+                <option value="30" selected>30 min</option>
+                <option value="45">45 min</option>
+                <option value="60">60 min</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <label for="task-reminder-toggle">Task Progress Reminders</label>
+                <p class="setting-desc">Get reminded to check your task progress</p>
+              </div>
+              <label class="toggle" for="task-reminder-toggle">
+                <input type="checkbox" id="task-reminder-toggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Appearance -->
+          <div class="settings-group">
+            <h4>🎨 Appearance</h4>
+            <div class="setting-item">
+              <div class="setting-info">
+                <label for="theme-toggle">Dark Mode</label>
+                <p class="setting-desc">Switch between light and dark theme</p>
+              </div>
+              <label class="toggle" for="theme-toggle">
+                <input type="checkbox" id="theme-toggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Data -->
+          <div class="settings-group">
+            <h4>💾 Data</h4>
+            <div class="setting-item">
+              <div class="setting-info">
+                <label>Export Data</label>
+                <p class="setting-desc">Download all your data as JSON</p>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="btn-export">Export</button>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <label>Clear All Data</label>
+                <p class="setting-desc">Permanently delete all stored data</p>
+              </div>
+              <button class="btn btn-danger btn-sm" id="btn-clear-data">Clear Data</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Add Task Modal -->
+  <div class="modal-overlay hidden" id="add-task-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Add Daily Task</h3>
+        <button class="modal-close" id="modal-close" aria-label="Close modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="task-input">Task Name</label>
+          <input type="text" id="task-input" placeholder="e.g., Read 30 pages, Call mom..." maxlength="100" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="task-category">Category</label>
+          <select id="task-category">
+            <option value="health">🏃 Health & Fitness</option>
+            <option value="work">💼 Work</option>
+            <option value="learning">📚 Learning</option>
+            <option value="personal">🧘 Personal</option>
+            <option value="social">👥 Social</option>
+            <option value="creative">🎨 Creative</option>
+            <option value="chores">🏠 Chores</option>
+            <option value="skincare">✨ Skin Care</option>
+            <option value="haircare">💆‍♀️ Hair Care</option>
+            <option value="nutrition">🥦 Healthy Food</option>
+            <option value="spiritual">🙏 Prayer</option>
+            <option value="finance">📈 Finance</option>
+            <option value="other">📌 Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Priority</label>
+          <div class="priority-selector">
+            <button class="priority-btn" data-priority="low">Low</button>
+            <button class="priority-btn active" data-priority="medium">Medium</button>
+            <button class="priority-btn" data-priority="high">High</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modal-cancel">Cancel</button>
+        <button class="btn btn-primary" id="modal-add">Add Task</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Detail Modal -->
+  <div class="modal-overlay hidden" id="history-modal">
+    <div class="modal" style="max-width: 600px; width: 95%;">
+      <div class="modal-header">
+        <h3 id="history-modal-title">Activity Details</h3>
+        <button class="modal-close" id="history-modal-close" aria-label="Close modal">✕</button>
+      </div>
+      <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+        <div id="history-modal-content">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/constants.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/modules/navigation.js"></script>
+  <script src="js/modules/water.js"></script>
+  <script src="js/modules/routine.js"></script>
+  <script src="js/modules/tasks.js"></script>
+  <script src="js/modules/journal.js"></script>
+  <script src="js/modules/spendings.js"></script>
+  <script src="js/modules/career.js"></script>
+  <script src="js/modules/history.js"></script>
+  <script src="js/modules/settings.js"></script>
+  <script src="js/init.js"></script>
+</body>
+</html>
