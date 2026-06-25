@@ -50,7 +50,7 @@ function getTodayData() {
 function loadState() {
   appData = load(DATA_KEY, {});
   settings = load(SETTINGS_KEY, {
-    waterReminder: true, waterInterval: 30,
+    userName: '', waterReminder: true, waterInterval: 30,
     taskReminder: true, darkMode: true
   });
   routineItems = load(ROUTINE_KEY, []);

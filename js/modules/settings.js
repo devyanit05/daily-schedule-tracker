@@ -1,8 +1,22 @@
 function setupSettings() {
+  const userNameInput = $('user-name');
   const waterToggle = $('water-reminder-toggle');
   const waterInterval = $('water-interval');
   const taskToggle = $('task-reminder-toggle');
   const themeToggle = $('theme-toggle');
+
+  if (userNameInput) {
+    userNameInput.value = settings.userName || '';
+    userNameInput.addEventListener('input', () => {
+      settings.userName = userNameInput.value.trim();
+      save(SETTINGS_KEY, settings);
+      
+      // Update greeting live on the dashboard
+      if (typeof renderGreeting === 'function') {
+        renderGreeting();
+      }
+    });
+  }
 
   waterToggle.checked = settings.waterReminder;
   waterInterval.value = settings.waterInterval;

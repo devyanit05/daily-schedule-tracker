@@ -10,8 +10,10 @@ function renderDate() {
 
 function renderGreeting() {
   const h = new Date().getHours();
-  let g = h < 12 ? 'Good Morning ☀️' : h < 17 ? 'Good Afternoon 🌤️' : h < 21 ? 'Good Evening 🌅' : 'Good Night 🌙';
-  $('greeting').textContent = g;
+  let g = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : h < 21 ? 'Good Evening' : 'Good Night';
+  let icon = h < 12 ? '☀️' : h < 17 ? '🌤️' : h < 21 ? '🌅' : '🌙';
+  let name = settings.userName ? `, ${settings.userName}` : '';
+  $('greeting').textContent = `${g}${name} ${icon}`;
 }
 
 function renderMotivation() {
